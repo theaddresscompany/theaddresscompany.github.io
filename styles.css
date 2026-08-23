@@ -904,28 +904,28 @@ h1 em, h2 em {
 
 .contact__info p { color: var(--ink-soft); margin-bottom: 30px; font-size: 1.06rem; }
 
-.contact__details { display: grid; gap: 20px; }
-
-.contact-item {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
+.contact__promises {
+    display: grid;
+    gap: 14px;
+    margin-top: 8px;
 }
 
-.contact-item__icon {
-    flex-shrink: 0;
-    width: 48px; height: 48px;
-    display: grid;
-    place-items: center;
+.contact__promises li {
     background: var(--paper);
     border: 1px solid var(--line);
-    border-radius: 16px 16px 16px 5px;
-    font-size: 1.25rem;
-    box-shadow: 0 6px 16px rgba(64, 51, 42, 0.06);
+    border-radius: var(--radius-md);
+    padding: 15px 20px;
+    font-weight: 600;
+    font-size: 0.98rem;
+    color: var(--ink);
+    box-shadow: 0 6px 16px rgba(64, 51, 42, 0.05);
+    transition: transform 0.45s var(--ease-gentle), box-shadow 0.45s var(--ease-gentle);
 }
 
-.contact-item strong { display: block; font-size: 1rem; }
-.contact-item p { color: var(--ink-soft); font-size: 0.95rem; margin: 0; }
+.contact__promises li:hover {
+    transform: translateX(6px);
+    box-shadow: var(--shadow-soft);
+}
 
 .contact__form {
     background: var(--paper);
@@ -1146,7 +1146,7 @@ h1 em, h2 em {
 /* ---------- Floating buttons ---------- */
 .back-to-top {
     position: fixed;
-    right: 24px; bottom: 96px;
+    right: 24px; bottom: 28px;
     width: 48px; height: 48px;
     border: none;
     border-radius: 50%;
@@ -1168,28 +1168,6 @@ h1 em, h2 em {
 }
 
 .back-to-top:hover { background: var(--terra-deep); transform: translateY(-4px); }
-
-.whatsapp-float {
-    position: fixed;
-    right: 24px; bottom: 28px;
-    width: 56px; height: 56px;
-    display: grid;
-    place-items: center;
-    background: #5BA86B;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    box-shadow: 0 12px 28px rgba(91, 168, 107, 0.45);
-    z-index: 900;
-    animation: gentlePulse 3.2s ease-in-out infinite;
-    transition: transform 0.4s var(--ease-gentle);
-}
-
-.whatsapp-float:hover { transform: scale(1.1) rotate(-6deg); }
-
-@keyframes gentlePulse {
-    0%, 100% { box-shadow: 0 12px 28px rgba(91, 168, 107, 0.45), 0 0 0 0 rgba(91, 168, 107, 0.35); }
-    50%      { box-shadow: 0 12px 28px rgba(91, 168, 107, 0.45), 0 0 0 14px rgba(91, 168, 107, 0); }
-}
 
 /* ---------- Scroll reveal ---------- */
 .reveal {

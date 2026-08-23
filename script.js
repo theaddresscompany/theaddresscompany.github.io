@@ -1,6 +1,21 @@
 /* ============================================================
    THE ADDRESS COMPANY — gentle interactions & lead capture
    ============================================================ */
+
+/* ------------------------------------------------------------
+   LEAD DESTINATION: Google Form "Interest Form" → linked Sheet
+   The website POSTs each lead straight into this public Google Form,
+   which stores responses in its connected Google Sheet.
+   Field entry IDs were read from the live form's metadata.
+   ------------------------------------------------------------ */
+const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSeiwDBHaxy9QTyRCdfoC62inGwM2zdqhMOSyYBabRQv6Bl61A/formResponse';
+const GOOGLE_FORM_FIELDS = {
+    name:     'entry.2005620554',   // Name (required)
+    email:    'entry.1045781291',   // Email (optional, validated by Google)
+    interest: 'entry.122261008',    // What are you interested in? (dropdown)
+    phone:    'entry.1166974658'    // Phone number (required)
+};
+
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- Mobile navigation ---------- */
@@ -184,18 +199,49 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Collect the lead (demo: stored locally — wire to your CRM/backend in production)
+        // Build the lead record
         const lead = {
             name, phone, email, interest, budget, message,
             source: messageField.value.startsWith("Hi! I'd love to know more about") ? 'project-enquiry' : 'contact-form',
             capturedAt: new Date().toISOString()
         };
+
+        // Always keep a local backup copy
         const leads = JSON.parse(localStorage.getItem('tac_leads') || '[]');
         leads.push(lead);
         localStorage.setItem('tac_leads', JSON.stringify(leads));
 
-        showToast(`Thank you, ${name.split(' ')[0]}! Your home buddy will call you within 24 hours. Put the kettle on. ☕`);
-        contactForm.reset();
+        // Submit to the Google Form (lands in the connected Sheet)
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+
+        const formData = new URLSearchParams();
+        formData.append(GOOGLE_FORM_FIELDS.name, name);
+        formData.append(GOOGLE_FORM_FIELDS.phone, phone);
+        if (email) formData.append(GOOGLE_FORM_FIELDS.email, email);
+        formData.append(GOOGLE_FORM_FIELDS.interest, interest);
+
+        // mode: 'no-cors' lets the browser POST cross-origin without a
+        // preflight; Google still records the response in the sheet.
+        fetch(GOOGLE_FORM_ACTION, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString()
+        })
+            .then(() => {
+                showToast(`Thank you, ${name.split(' ')[0]}! Your home buddy will call you within 24 hours. Put the kettle on. ☕`);
+                contactForm.reset();
+            })
+            .catch(() => {
+                showToast(`Saved your details locally, ${name.split(' ')[0]} — but the sheet didn't respond. We'll still reach out! 💛`);
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+            });
     });
 
     /* ---------- FAQ — one open at a time ---------- */
